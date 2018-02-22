@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
+import {BookService} from '../service/book.service';
 
 @Component({
   selector: 'app-book',
@@ -10,12 +12,16 @@ export class BookComponent implements OnInit {
 
   books: any;
 
-  constructor(private http: HttpClient) { }
+  constructor(private bookService: BookService, private router: Router) { }
 
   ngOnInit() {
-    this.http.get('/book').subscribe(data => {
-      this.books = data;
-    });
+    this.bookService.find().subscribe(
+      data => { this.books = data; },
+      err => {
+        if (err.status === 401) {
+              this.router.navigate(['login']);
+        }
+      });
   }
 
 }
